@@ -519,29 +519,29 @@ from praisonaiagents import MinimalTelemetry, TelemetryCollector, cleanup_teleme
 
 Methods:
 
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">flush</a>()</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">flush</a>() -> None</code>
 * <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">get_metrics</a>() -> Dict[str, Any]</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">shutdown</a>()</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_agent_execution</a>(agent_name: str = None, success: bool = True, async_mode: bool = False)</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_error</a>(error_type: str = None)</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_feature_usage</a>(feature_name: str)</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_task_completion</a>(task_name: str = None, success: bool = True)</code>
-* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_tool_usage</a>(tool_name: str, success: bool = True, execution_time: float = None)</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">shutdown</a>() -> None</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_agent_execution</a>(agent_name: str = None, success: bool = True, async_mode: bool = False) -> None</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_error</a>(error_type: str = None) -> None</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_feature_usage</a>(feature_name: str = '') -> None</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_task_completion</a>(task_name: str = None, success: bool = True) -> None</code>
+* <code title="class MinimalTelemetry">MinimalTelemetry.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">track_tool_usage</a>(tool_name: str = '', success: bool = True, execution_time: float = None) -> None</code>
 * <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">get_metrics</a>() -> Dict[str, Any]</code>
-* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">record_cost</a>(cost: float, model: str = None)</code>
-* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">record_tokens</a>(prompt_tokens: int, completion_tokens: int, model: str = None)</code>
-* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">start</a>()</code>
-* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">stop</a>()</code>
+* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">record_cost</a>(cost: float, model: str = None) -> None</code>
+* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">record_tokens</a>(prompt_tokens: int, completion_tokens: int, model: str = None) -> None</code>
+* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">start</a>() -> None</code>
+* <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">stop</a>() -> None</code>
 * <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">trace_agent_execution</a>(agent_name: str, **attributes)</code>
 * <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">trace_llm_call</a>(model: str = None, **attributes)</code>
 * <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">trace_task_execution</a>(task_name: str, agent_name: str = None, **attributes)</code>
 * <code title="class TelemetryCollector">TelemetryCollector.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">trace_tool_call</a>(tool_name: str, **attributes)</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">cleanup_telemetry_resources</a>()</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">disable_performance_mode</a>()</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">disable_telemetry</a>()</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">enable_performance_mode</a>()</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">enable_telemetry</a>()</code>
-* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/__init__.py">get_telemetry</a>() -> 'MinimalTelemetry'</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/integration.py">cleanup_telemetry_resources</a>() -> None</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/integration.py">disable_performance_mode</a>() -> None</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">disable_telemetry</a>() -> None</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/integration.py">enable_performance_mode</a>() -> None</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">enable_telemetry</a>() -> None</code>
+* <code title="function">praisonaiagents.<a href="./src/praisonai-agents/praisonaiagents/telemetry/telemetry.py">get_telemetry</a>() -> MinimalTelemetry</code>
 
 # Observability
 
