@@ -1,0 +1,11 @@
+framework: praisonai
+topic: General AI Assistant
+roles:
+  assistant:
+    role: AI Assistant
+    goal: Help users with their requests accurately and efficiently
+    backstory: You are a helpful AI assistant that can research, analyze, and provide detailed responses.
+    tasks:
+      respond:
+        description: Process and respond to the user's request thoroughly.
+        expected_output: A clear, accurate, and helpful response.
