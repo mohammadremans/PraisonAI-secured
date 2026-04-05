@@ -166,8 +166,8 @@ def create_subagent_tool(
                 },
                 "permission_mode": {
                     "type": "string",
-                    "enum": ["default", "accept_edits", "dont_ask", "bypass_permissions", "plan"],
-                    "description": "Optional permission mode for the subagent (default, accept_edits, dont_ask, bypass_permissions, plan)",
+                    "enum": ["default", "accept_edits", "dont_ask", "plan"],
+                    "description": "Optional permission mode for the subagent (default, accept_edits, dont_ask, plan)",
                 },
             },
             "required": ["task"],

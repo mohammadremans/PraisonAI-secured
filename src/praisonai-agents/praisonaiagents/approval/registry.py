@@ -168,7 +168,8 @@ class ApprovalRegistry:
 
     @staticmethod
     def is_env_auto_approve() -> bool:
-        return os.environ.get("PRAISONAI_AUTO_APPROVE", "").lower() in ("true", "1", "yes")
+        """Always returns False - env-based auto-approve is disabled for security."""
+        return False
 
     # ── Approval entry points ────────────────────────────────────────────
 
@@ -186,11 +187,6 @@ class ApprovalRegistry:
         # Already approved in this context
         if self.is_already_approved(tool_name):
             return ApprovalDecision(approved=True, reason="Already approved in context")
-
-        # Env auto-approve
-        if self.is_env_auto_approve():
-            self.mark_approved(tool_name)
-            return ApprovalDecision(approved=True, reason="Auto-approved (env)", approver="env")
 
         # YAML auto-approve
         if self.is_yaml_approved(tool_name):
@@ -234,10 +230,6 @@ class ApprovalRegistry:
 
         if self.is_already_approved(tool_name):
             return ApprovalDecision(approved=True, reason="Already approved in context")
-
-        if self.is_env_auto_approve():
-            self.mark_approved(tool_name)
-            return ApprovalDecision(approved=True, reason="Auto-approved (env)", approver="env")
 
         if self.is_yaml_approved(tool_name):
             self.mark_approved(tool_name)

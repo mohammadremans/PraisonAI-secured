@@ -21,38 +21,66 @@ from ..approval import require_approval
 class FileTools:
     """Tools for file operations including read, write, list, and information."""
     
+    # Sensitive paths that should never be accessed
+    _BLOCKED_PATHS = frozenset({
+        "/etc/passwd", "/etc/shadow", "/etc/sudoers",
+        "/etc/ssh", "/etc/ssl/private",
+    })
+
+    # Default allowed base directories (CWD + home)
+    _ALLOWED_BASES: list = []
+
     @staticmethod
     def _validate_path(filepath: str) -> str:
         """
         Validate and normalize a file path to prevent path traversal attacks.
-        
+
+        Uses os.path.realpath() to resolve symlinks and '..' segments, then
+        checks the resolved path is within allowed directories and is not a
+        known sensitive system path.
+
         Args:
             filepath: Path to validate
-            
+
         Returns:
-            str: Normalized absolute path
-            
+            str: Resolved absolute path
+
         Raises:
-            ValueError: If path contains suspicious patterns
+            ValueError: If path is outside allowed directories or targets a
+                        sensitive system file.
         """
-        # Expand ~ to user home directory FIRST (before any validation)
+        # Expand ~ to user home directory FIRST
         if filepath.startswith('~'):
             filepath = os.path.expanduser(filepath)
-        
-        # Normalize the path
-        normalized = os.path.normpath(filepath)
-        absolute = os.path.abspath(normalized)
-        
-        # Check for path traversal attempts (.. after normalization)
-        # We check the original input for '..' to catch traversal attempts
-        if '..' in normalized:
-            raise ValueError(f"Path traversal detected: {filepath}")
-        
-        # Additional check: ensure the resolved path doesn't escape expected boundaries
-        # This is a basic check - in production, you'd want to define allowed directories
-        return absolute
+
+        # Resolve to a real absolute path (follows symlinks, resolves '..')
+        resolved = os.path.realpath(os.path.abspath(filepath))
+
+        # Block known sensitive paths
+        for blocked in FileTools._BLOCKED_PATHS:
+            if resolved == blocked or resolved.startswith(blocked + os.sep):
+                raise ValueError(f"Access to sensitive path is blocked: {filepath}")
+
+        # Determine allowed base directories
+        allowed_bases = FileTools._ALLOWED_BASES or [
+            os.getcwd(),
+            os.path.expanduser("~"),
+        ]
+
+        # Ensure the resolved path is within an allowed base
+        if not any(
+            resolved == base or resolved.startswith(base + os.sep)
+            for base in (os.path.realpath(b) for b in allowed_bases)
+        ):
+            raise ValueError(
+                f"Path traversal blocked: resolved path '{resolved}' "
+                f"is outside allowed directories"
+            )
+
+        return resolved
     
     @staticmethod
+    @require_approval(risk_level="medium")
     def read_file(filepath: str, encoding: str = 'utf-8') -> str:
         """
         Read content from a file.

@@ -167,17 +167,12 @@ def require_approval(risk_level: RiskLevel = "high"):
         tool_name = getattr(func, '__name__', str(func))
         reg = get_approval_registry()
         reg.add_requirement(tool_name, risk_level)
-        APPROVAL_REQUIRED_TOOLS.add(tool_name)
-        TOOL_RISK_LEVELS[tool_name] = risk_level
 
         @wraps(func)
         def wrapper(*args, **kwargs):
             if is_already_approved(tool_name):
                 return func(*args, **kwargs)
             if is_yaml_approved(tool_name):
-                mark_approved(tool_name)
-                return func(*args, **kwargs)
-            if is_env_auto_approve():
                 mark_approved(tool_name)
                 return func(*args, **kwargs)
             try:
@@ -200,9 +195,6 @@ def require_approval(risk_level: RiskLevel = "high"):
             if is_already_approved(tool_name):
                 return await func(*args, **kwargs)
             if is_yaml_approved(tool_name):
-                mark_approved(tool_name)
-                return await func(*args, **kwargs)
-            if is_env_auto_approve():
                 mark_approved(tool_name)
                 return await func(*args, **kwargs)
             decision = await request_approval(tool_name, kwargs)

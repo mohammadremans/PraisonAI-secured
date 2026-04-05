@@ -20,15 +20,79 @@ from ..approval import require_approval
 
 class ShellTools:
     """Tools for executing shell commands safely."""
-    
-    def __init__(self):
+
+    # Allowlist of permitted command binaries
+    ALLOWED_COMMANDS = frozenset({
+        # Navigation & inspection
+        "ls", "dir", "pwd", "cd", "cat", "head", "tail", "less", "more",
+        "wc", "file", "stat", "du", "df", "which", "whereis", "type",
+        # Search
+        "find", "grep", "rg", "ag", "ack", "locate",
+        # Text processing
+        "echo", "printf", "sort", "uniq", "cut", "tr", "sed", "awk",
+        "diff", "patch", "jq", "yq", "xargs",
+        # Dev tools
+        "python", "python3", "pip", "pip3", "node", "npm", "npx",
+        "git", "gh", "cargo", "rustc", "go", "make", "cmake",
+        "docker", "docker-compose", "kubectl",
+        # Package managers
+        "brew", "apt", "apt-get", "yum", "dnf", "pacman",
+        # Network (read-only)
+        "curl", "wget", "ping", "dig", "nslookup", "host",
+        # Archive
+        "tar", "zip", "unzip", "gzip", "gunzip",
+        # Misc safe
+        "date", "cal", "env", "printenv", "uname", "hostname", "whoami",
+        "touch", "mkdir", "cp", "mv", "ln", "chmod", "chown",
+        "tee", "xargs", "basename", "dirname", "realpath", "readlink",
+    })
+
+    # Dangerous command patterns that are always blocked
+    BLOCKED_PATTERNS = frozenset({
+        "rm -rf /", "rm -rf /*", "rm -rf ~",
+        "dd if=", "mkfs", "fdisk", "parted",
+        "shutdown", "reboot", "halt", "poweroff", "init 0", "init 6",
+        ":(){ :|:& };:", "fork bomb",
+        "> /dev/sda", "> /dev/null",
+        "chmod -R 777 /", "chown -R",
+    })
+
+    def __init__(self) -> None:
         """Initialize ShellTools."""
         self._check_dependencies()
-    
-    def _check_dependencies(self):
-        """Check if required packages are installed (lazy — no hard failure)."""
+
+    def _check_dependencies(self) -> None:
+        """Check if required packages are installed (lazy - no hard failure)."""
         pass
-    
+
+    @staticmethod
+    def _is_command_allowed(command_parts: List[str]) -> bool:
+        """Check if a command binary is in the allowlist.
+
+        Args:
+            command_parts: The split command as a list of strings.
+
+        Returns:
+            True if the command binary is allowed, False otherwise.
+        """
+        if not command_parts:
+            return False
+        binary = os.path.basename(command_parts[0])
+        return binary in ShellTools.ALLOWED_COMMANDS
+
+    @staticmethod
+    def _is_blocked_pattern(raw_command: str) -> bool:
+        """Check if raw command matches a dangerous pattern.
+
+        Args:
+            raw_command: The original unsplit command string.
+
+        Returns:
+            True if the command matches a blocked pattern.
+        """
+        normalized = raw_command.strip().lower()
+        return any(pattern in normalized for pattern in ShellTools.BLOCKED_PATTERNS)
+
     @require_approval(risk_level="critical")
     def execute_command(
         self,
@@ -36,28 +100,48 @@ class ShellTools:
         cwd: Optional[str] = None,
         timeout: int = 30,
         env: Optional[Dict[str, str]] = None,
-        max_output_size: int = 10000
+        max_output_size: int = 10000,
     ) -> Dict[str, Union[str, int, bool]]:
         """Execute a shell command safely.
-        
+
         Args:
             command: Command to execute
             cwd: Working directory
             timeout: Maximum execution time in seconds
             env: Environment variables
             max_output_size: Maximum output size in bytes
-            
+
         Returns:
             Dictionary with execution results
         """
         try:
+            # Block dangerous patterns before any processing
+            if self._is_blocked_pattern(command):
+                return {
+                    'stdout': '',
+                    'stderr': f'Command blocked: matches a dangerous pattern',
+                    'exit_code': -1,
+                    'success': False,
+                    'execution_time': 0,
+                }
+
             # Always split command for safety (no shell execution)
             # Use shlex.split with appropriate posix flag
             if platform.system() == 'Windows':
-                # Use shlex with posix=False for Windows to handle quotes properly
                 command = shlex.split(command, posix=False)
             else:
                 command = shlex.split(command)
+
+            # Validate command against allowlist
+            if not self._is_command_allowed(command):
+                binary = os.path.basename(command[0]) if command else "<empty>"
+                return {
+                    'stdout': '',
+                    'stderr': f'Command blocked: "{binary}" is not in the allowed commands list',
+                    'exit_code': -1,
+                    'success': False,
+                    'execution_time': 0,
+                }
             
             # Expand tilde and environment variables in command arguments
             # (shell=False means the shell won't do this for us)
